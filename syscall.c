@@ -1,4 +1,6 @@
 /* Copyright (C) 2003,2004 Andi Kleen, SuSE Labs.
+   Copyright (C) 2018-2019 VMware, Inc.
+   PDX-License-Identifier: GPL-2.0
 
    libnuma is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
@@ -25,7 +27,8 @@
 
 #if !defined(__NR_mbind) || !defined(__NR_set_mempolicy) || \
     !defined(__NR_get_mempolicy) || !defined(__NR_migrate_pages) || \
-    !defined(__NR_move_pages)
+    !defined(__NR_move_pages) || !defined(__NR_set_pgtblreplpolicy) || \
+    !defined(__NR_get_pgtblreplpolicy)
 
 #if defined(__x86_64__)
 
@@ -39,8 +42,13 @@
 #define __NR_get_mempolicy 239
 #define __NR_migrate_pages 256
 #define __NR_move_pages 279
+#define __NR_set_pgtblreplpolicy 400
+#define __NR_get_pgtblreplpolicy 401    
 
 #elif defined(__ia64__)
+
+#error "mitosis error: pgtable replication not implemented for this architecture"
+
 #define __NR_sched_setaffinity    1231
 #define __NR_sched_getaffinity    1232
 #define __NR_migrate_pages	1280
@@ -59,8 +67,12 @@
 #define __NR_set_mempolicy 276
 #define __NR_migrate_pages 294
 #define __NR_move_pages 317
+#define __NR_set_pgtblreplpolicy 400
+#define __NR_get_pgtblreplpolicy 401
 
 #elif defined(__powerpc__)
+
+#error "mitosis error: pgtable replication not implemented for this architecture"
 
 #define __NR_mbind 259
 #define __NR_get_mempolicy 260
@@ -71,6 +83,8 @@
 */
 
 #elif defined(__mips__)
+
+#error "mitosis error: pgtable replication not implemented for this architecture"    
 
 #if _MIPS_SIM == _ABIO32
 /*
@@ -110,10 +124,15 @@
 #define __NR_migrate_pages	272
 
 #elif defined(__arm__)
+
+#error "mitosis error: pgtable replication not implemented for this architecture"
+
 /* https://bugs.debian.org/796802 */
 #warning "ARM does not implement the migrate_pages() syscall"
 
 #elif defined(__s390x__)
+
+#error "mitosis error: pgtable replication not implemented for this architecture"
 
 #define __NR_mbind 235
 #define __NR_get_mempolicy 236
@@ -196,6 +215,23 @@ long syscall6(long call, long a, long b, long c, long d, long e, long f)
 #else
 #define syscall6 syscall
 #endif
+
+long WEAK get_pgreplpolicy(int *policy, unsigned long *nmask,
+        unsigned long maxnode, void *addr,
+        unsigned flags)
+{
+  return syscall(__NR_get_mempolicy, policy, nmask,
+          maxnode, addr, flags);
+}
+
+long WEAK set_pgreplpolicy(int mode, const unsigned long *nmask,
+                                   unsigned long maxnode)
+{
+  long i;
+  i = syscall(__NR_set_mempolicy,mode,nmask,maxnode);
+  return i;
+}
+
 
 long WEAK get_mempolicy(int *policy, unsigned long *nmask,
 				unsigned long maxnode, void *addr,

@@ -1,3 +1,20 @@
+/* Copyright (C) 2018-2019 VMware, Inc.
+   PDX-License-Identifier: GPL-2.0
+
+   libnuma is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Lesser General Public
+   License as published by the Free Software Foundation; version
+   2.1.
+
+   libnuma is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Lesser General Public License for more details.
+
+   You should find a copy of v2.1 of the GNU Lesser General Public License
+   somewhere on your Linux system; if not, write to the Free Software
+   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA */
+
 #ifndef NUMAIF_H
 #define NUMAIF_H 1
 
@@ -8,6 +25,10 @@ extern "C" {
 /* Kernel interface for NUMA API */
 
 /* System calls */
+extern long get_pgreplpolicy(int *mode, unsigned long *nmask,
+			unsigned long maxnode, void *addr, unsigned flags);
+extern long set_pgreplpolicy(int mode, const unsigned long *nmask,
+			  unsigned long maxnode);	
 extern long get_mempolicy(int *mode, unsigned long *nmask,
 			unsigned long maxnode, void *addr, unsigned flags);
 extern long mbind(void *start, unsigned long len, int mode,
