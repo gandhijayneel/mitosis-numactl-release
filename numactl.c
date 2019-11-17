@@ -1,4 +1,7 @@
 /* Copyright (C) 2003,2004,2005 Andi Kleen, SuSE Labs.
+   Copyright (C) 2018-2019 VMware, Inc.
+   PDX-License-Identifier: GPL-2.0
+   
    Command line NUMA policy control.
 
    numactl is free software; you can redistribute it and/or
@@ -45,6 +48,7 @@ struct option opts[] = {
 	{"show", 0, 0, 's' },
 	{"localalloc", 0,0, 'l'},
 	{"hardware", 0,0,'H' },
+	{"pgtablerepl", 1, 0, 'r' },
 
 	{"shm", 1, 0, 'S'},
 	{"file", 1, 0, 'f'},
@@ -66,6 +70,7 @@ void usage(void)
 	fprintf(stderr,
 		"usage: numactl [--all | -a] [--interleave= | -i <nodes>] [--preferred= | -p <node>]\n"
 		"               [--physcpubind= | -C <cpus>] [--cpunodebind= | -N <nodes>]\n"
+		"               [--pgtablerepl= | -r <nodes>] \n"
 		"               [--membind= | -m <nodes>] [--localalloc | -l] command args ...\n"
 		"       numactl [--show | -s]\n"
 		"       numactl [--hardware | -H]\n"
@@ -452,6 +457,22 @@ int main(int ac, char **av)
 				numa_set_interleave_mask(mask);
 			checkerror("setting interleave mask");
 			break;
+		case 'r': /* --pgtablerepl */
+			checknuma();
+			if (parse_all)
+				mask = numactl_parse_nodestring(optarg, ALL);
+			else
+				mask = numactl_parse_nodestring(optarg, CPUSET);
+			if (!mask) {
+				printf ("<%s> is invalid\n", optarg);
+				usage();
+			}
+
+			errno = 0;
+			did_node_cpu_parse = 1;
+			numa_set_pgtable_replication_mask(mask);
+			checkerror("Error while setting pgtable replication mask");
+			break;						
 		case 'N': /* --cpunodebind */
 		case 'c': /* --cpubind */
 			dontshm("-c/--cpubind/--cpunodebind");
