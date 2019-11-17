@@ -1,5 +1,5 @@
 /* Copyright (C) 2018-2019 VMware, Inc.
-   PDX-License-Identifier: GPL-2.0
+   SPDX-License-Identifier: GPL-2.0
 
    libnuma is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public

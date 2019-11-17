@@ -1,6 +1,6 @@
 /* Copyright (C) 2003,2004,2005 Andi Kleen, SuSE Labs.
    Copyright (C) 2018-2019 VMware, Inc.
-   PDX-License-Identifier: GPL-2.0
+   SPDX-License-Identifier: GPL-2.0
    
    Command line NUMA policy control.
 
