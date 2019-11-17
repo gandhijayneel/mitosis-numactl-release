@@ -1,6 +1,11 @@
-# numactl
+# mitosis-numactl
 
-[![Build Status](https://travis-ci.org/numactl/numactl.svg?branch=master)](https://travis-ci.org/numactl/numactl)
+Version 2.0.10-mitosis Copyright 2018-2019 VMware, Inc.
+SPDX-License-Identifier: LGPL-2.1-only
+
+This project contains a modified [`numactl`](https://github.com/numactl/numactl) 
+implementation that adds support for controlling the page table allocation 
+policies of processes in addition to changing NUMA allocation policies. 
 
 Simple NUMA policy support. It consists of a numactl program to run other
 programs with a specific NUMA policy and a libnuma shared library ("NUMA API")
