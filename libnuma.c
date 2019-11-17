@@ -1,6 +1,8 @@
 /* Simple NUMA library.
    Copyright (C) 2003,2004,2005,2008 Andi Kleen,SuSE Labs and
    Cliff Wickman,SGI.
+   Copyright (C) 2018-2019 VMware, Inc.
+   PDX-License-Identifier: GPL-2.0
 
    libnuma is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
@@ -300,6 +302,18 @@ static void getpol(int *oldpolicy, struct bitmask *bmp)
 {
 	if (get_mempolicy(oldpolicy, bmp->maskp, bmp->size + 1, 0, 0) < 0)
 		numa_error("get_mempolicy");
+}
+
+static void setpgreplpol(int policy, struct bitmask *bmp)
+{
+	if (set_pgreplpolicy(policy, bmp->maskp, bmp->size + 1) < 0)
+		numa_error("set_pgreplpol");
+}
+
+static void getpgreplpol(int *oldpolicy, struct bitmask *bmp)
+{
+	if (get_pgreplpolicy(oldpolicy, bmp->maskp, bmp->size + 1, 0, 0) < 0)
+		numa_error("get_pgreplpol");
 }
 
 static void dombind(void *mem, size_t size, int pol, struct bitmask *bmp)
@@ -997,6 +1011,28 @@ numa_get_interleave_mask_v2(void)
 	return bmp;
 }
 __asm__(".symver numa_get_interleave_mask_v2,numa_get_interleave_mask@@libnuma_1.2");
+
+void
+numa_set_pgtable_replication_mask(struct bitmask *bmp)
+{
+	if (numa_bitmask_equal(bmp, numa_no_nodes_ptr))
+		setpgreplpol(MPOL_DEFAULT, bmp);
+	else
+		setpgreplpol(MPOL_INTERLEAVE, bmp);
+}
+
+struct bitmask *
+numa_get_pgtable_replication_mask(void)
+{
+	int oldpolicy;
+	struct bitmask *bmp;
+
+	bmp = numa_allocate_nodemask();
+	getpgreplpol(&oldpolicy, bmp);
+	if (oldpolicy != MPOL_INTERLEAVE)
+		copy_bitmask_to_bitmask(numa_no_nodes_ptr, bmp);
+	return bmp;
+}
 
 /* (undocumented) */
 int numa_get_interleave_node(void)

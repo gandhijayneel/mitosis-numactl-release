@@ -1,4 +1,6 @@
 /* Copyright (C) 2003,2004 Andi Kleen, SuSE Labs.
+   Copyright (C) 2018-2019 VMware, Inc.
+   PDX-License-Identifier: GPL-2.0
 
    libnuma is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
@@ -174,6 +176,12 @@ void numa_set_interleave_mask(struct bitmask *nodemask);
 
 /* Return the current interleaving mask */
 struct bitmask *numa_get_interleave_mask(void);
+
+/* Set the page table NUMA node mask. NULL to turn off replication */
+void numa_set_pgtable_replication_mask(struct bitmask *nodemask);
+
+/* Return the current page table replication mask */
+struct bitmask *numa_get_pgtable_replication_mask(void);
 
 /* allocate a bitmask big enough for all nodes */
 struct bitmask *numa_allocate_nodemask(void);
